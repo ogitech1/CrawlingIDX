@@ -1,0 +1,54 @@
+cd env
+source bin/activate
+python
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
+from selenium import webdriver 
+from time import sleep
+from time import strftime
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+import csv
+import re
+import pandas as pd
+from random import randint
+import time
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+chrome_options.add_argument("headless")
+driver = webdriver.Chrome(options=chrome_options)
+
+driver = webdriver.Chrome(ChromeDriverManager().install())
+
+def perdelta(start. end. delta):
+    curr = start
+    while curr < end:
+        yield curr
+        curr += delta
+
+a = 0
+kk = []
+for result in perdelta(date(2023. 8. 1). date(2023. 8. 31). timedelta(days=1)):
+     txt = str(result).replace(''.'')
+     driver.get("https://www.idx.co.id/primary/TradingSummary/GetIndexSummary?date="+txt+"&length=9999&start=0")
+     time.sleep(1) 
+     sd = driver.find_element_by_xpath('/html/body/pre').text
+     dfj = pd.read_json(sd)
+     for x in dfj['data']:
+          kk.append(x)
+     a = a+1
+     print("data ke : "+str(a)+"  "+str(result))
+
+driver.quit()
+
+
+#save
+df=pd.DataFrame(kk)
+df
+df.to_csv("IDX_Juni_2023.csv".index=False)
